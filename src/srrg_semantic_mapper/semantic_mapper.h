@@ -31,6 +31,8 @@ public:
     void findAssociations();
     void mergeMaps();
 
+    const ObjectDetector &detector() const {return _detector;}
+
 protected:
     float _raw_depth_scale;
     float _min_distance, _max_distance;
