@@ -1,0 +1,3 @@
+add_subdirectory(types)
+add_subdirectory(srrg_object_detector)
+add_subdirectory(srrg_semantic_mapper)
