@@ -20,8 +20,6 @@ class SemanticMapper{
 public:
     SemanticMapper();
 
-    void readData(char* filename);
-
     inline void setK(const Eigen::Matrix3f& K_){_K = K_; _invK = _K.inverse();}
 
     void setImages(const srrg_core::RGBImage& rgb_image_,
@@ -32,6 +30,7 @@ public:
     void mergeMaps();
 
     const ObjectDetector &detector() const {return _detector;}
+    ObjectDetector &detector() {return _detector;}
 
 protected:
     float _raw_depth_scale;
