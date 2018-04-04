@@ -10,6 +10,7 @@ namespace srrg_semantic_mapper{
 
     _min_distance = 0.02;
     _max_distance = 5.0;
+    _raw_depth_scale = 0.001;
 
     _local_set = false;
     _global_set = false;
@@ -48,7 +49,9 @@ namespace srrg_semantic_mapper{
 
   Vector3fVector SemanticMapper::unproject(const std::vector<Eigen::Vector2i> &pixels){
     int num_pixels = pixels.size();
+    std::cerr << "num pixels: " << num_pixels << std::endl;
     Vector3fVector points(num_pixels);
+
     int k=0;
     for(int idx=0; idx < num_pixels; ++idx){
       const Eigen::Vector2i& pixel = pixels[idx];
@@ -65,7 +68,7 @@ namespace srrg_semantic_mapper{
 
       Eigen::Vector3f camera_point = _invK * Eigen::Vector3f(c*d,r*d,d);
       Eigen::Vector3f map_point = _globalT*camera_point;
-      //        std::cerr << map_point.transpose() << " ";
+
       points[k]=map_point;
       k++;
     }
@@ -116,7 +119,8 @@ namespace srrg_semantic_mapper{
       cerr << detection->type() << ": [(";
       cerr << detection->topLeft().transpose() << ") - (" << detection->bottomRight().transpose() << ")]" << endl;
 
-      if((detection->bottomRight()-detection->topLeft()).norm() < 1e-3)
+      if((detection->bottomRight()-detection->topLeft()).norm() < 1e-3 ||
+         (detection->bottomRight()-detection->topLeft()).norm() >= 2e+4)
         continue;
 
       std::cerr << "Unprojecting" << std::endl;
@@ -130,7 +134,7 @@ namespace srrg_semantic_mapper{
 
       std::string object_type = detection->type().substr(0,detection->type().find_first_of("_"));
 
-      std::cerr << "BB: [(" << lower.transpose() << "," << upper.transpose() << ")]" << std::endl;
+      std::cerr << std::endl << "BB: [(" << lower.transpose() << "," << upper.transpose() << ")]" << std::endl;
 
       ObjectPtr obj_ptr = ObjectPtr(new Object(i,
                                                object_type,
