@@ -116,25 +116,22 @@ namespace srrg_semantic_mapper{
 
       const DetectionPtr& detection = _detections[i];
 
-      cerr << detection->type() << ": [(";
-      cerr << detection->topLeft().transpose() << ") - (" << detection->bottomRight().transpose() << ")]" << endl;
-
       if((detection->bottomRight()-detection->topLeft()).norm() < 1e-3 ||
          (detection->bottomRight()-detection->topLeft()).norm() >= 2e+4)
         continue;
 
-      std::cerr << "Unprojecting" << std::endl;
-      Vector3fVector points = unproject(detection->pixels());
-
-      Eigen::Vector3f lower,upper;
-      getLowerUpper3d(points,lower,upper);
-
-      Eigen::Isometry3f pose = Eigen::Isometry3f::Identity();
-      pose.translation() = (upper+lower)/2.0f;
+      std::cerr << std::endl << detection->type() << ": [(";
+      std::cerr << detection->topLeft().transpose() << ") - (" << detection->bottomRight().transpose() << ")]" << std::endl;
 
       std::string object_type = detection->type().substr(0,detection->type().find_first_of("_"));
 
-      std::cerr << std::endl << "BB: [(" << lower.transpose() << "," << upper.transpose() << ")]" << std::endl;
+      Vector3fVector points = unproject(detection->pixels());
+      Eigen::Vector3f lower,upper;
+      getLowerUpper3d(points,lower,upper);
+      std::cerr << "BB: [(" << lower.transpose() << "," << upper.transpose() << ")]" << std::endl;
+
+      Eigen::Isometry3f pose = Eigen::Isometry3f::Identity();
+      pose.translation() = (upper+lower)/2.0f;
 
       ObjectPtr obj_ptr = ObjectPtr(new Object(i,
                                                object_type,
@@ -226,4 +223,5 @@ namespace srrg_semantic_mapper{
       }
     }
   }
+
 }
