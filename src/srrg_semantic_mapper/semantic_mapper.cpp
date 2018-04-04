@@ -220,6 +220,7 @@ namespace srrg_semantic_mapper{
           continue;
 
         global_associated->merge(local);
+        merged++;
       }
     }
   }

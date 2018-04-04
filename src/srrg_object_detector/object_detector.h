@@ -69,7 +69,6 @@ namespace srrg_semantic_mapper{
                                    const srrg_core::Float3Image &points_image = srrg_core::Float3Image());
 
     cv::Vec3b type2color(std::string type);
-
     void computeLabelImage(const DetectionVector &detections);
 
   };

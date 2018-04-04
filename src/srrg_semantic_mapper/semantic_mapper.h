@@ -66,7 +66,6 @@ protected:
 private:
     srrg_core::Vector3fVector unproject(const std::vector<Eigen::Vector2i> &pixels);
     void getLowerUpper3d(const srrg_core::Vector3fVector &points, Eigen::Vector3f &lower, Eigen::Vector3f &upper);
-    void unproject();
     int associationID(const ObjectPtr &local);
 };
 
