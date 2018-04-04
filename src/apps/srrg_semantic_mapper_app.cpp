@@ -5,6 +5,7 @@
 #include <opencv2/imgproc.hpp>
 
 #include <srrg_semantic_mapper/semantic_mapper.h>
+#include <srrg_semantic_mapper_viewers/mapper_viewer.h>
 
 using namespace srrg_semantic_mapper;
 
@@ -22,11 +23,19 @@ int main(int argc, char** argv){
   SemanticMapper mapper;
   mapper.setK(K);
 
+  QApplication app(argc, argv);
+  MapperViewer viewer;
+  viewer.setMapper(&mapper);
+  viewer.show();
+
+
   std::string line;
   std::ifstream data(argv[1]);
 
+  bool first = true;
+
   if(data.is_open()){
-    while(std::getline(data,line)){
+    while(std::getline(data,line) && first){
       std::istringstream iss(line);
       int seq;
       std::string rgb_filename,depth_filename,rgbd_filename,logical_filename,models_filename;
@@ -56,12 +65,23 @@ int main(int argc, char** argv){
 //      cv::imshow("label_image",label_image);
 //      cv::waitKey();
 
+      mapper.extractObjects();
+      mapper.findAssociations();
+      mapper.mergeMaps();
+
+      viewer.updateGL();
+      app.processEvents();
+
+      if(first){
+        first = false;
+      }
 
     }
   }
 
   data.close();
 
+  app.exec();
   return 0;
 }
 
@@ -95,6 +115,10 @@ void deserializeModels(const char * filename, ObjectDetector::ModelVector &model
       double px,py,pz,r00,r01,r02,r10,r11,r12,r20,r21,r22;
       double minx,miny,minz,maxx,maxy,maxz;
       iss >> type;
+
+      if(type.length() < 3)
+        continue;
+
       Eigen::Isometry3f model_pose=Eigen::Isometry3f::Identity();
       iss >>px>>py>>pz>>r00>>r01>>r02>>r10>>r11>>r12>>r20>>r21>>r22;
       model_pose.translation()=Eigen::Vector3f(px,py,pz);

@@ -139,7 +139,7 @@ include_directories(${SRRG_QT_INCLUDE_DIRS})
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS 
+  INCLUDE_DIRS src
   LIBRARIES srrg_types_library
             srrg_object_detector_library
             srrg_semantic_mapper_library
