@@ -1,8 +1,10 @@
 #include "object.h"
+#include "srrg_gl_helpers/opengl_primitives.h"
 
 namespace srrg_semantic_mapper{
 
   using namespace std;
+  using namespace srrg_gl_helpers;
 
   Object::Object(int id_,
                  std::string type_,
@@ -40,6 +42,22 @@ namespace srrg_semantic_mapper{
       _upper.z() = o->upper().z();
 
     _pose.translation() = (_lower+_upper)/2.0f;
+
+  }
+
+  void Object::draw() const {
+
+    const Eigen::Vector3f centroid = (_lower + _upper)/2.0f;
+    const Eigen::Vector3f size = (_upper - _lower);
+
+    Eigen::Isometry3f transform = Eigen::Isometry3f::Identity();
+    transform.translation() = centroid;
+
+    glPushMatrix();
+    glMultMatrix(transform);
+    glColor4f(1.0,0.0,0.0,1.0);
+    drawBoxWireframe(size.x(),size.y(),size.z());
+    glPopMatrix();
 
   }
 }

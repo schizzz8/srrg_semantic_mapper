@@ -143,6 +143,7 @@ catkin_package(
   LIBRARIES srrg_types_library
             srrg_object_detector_library
             srrg_semantic_mapper_library
+            srrg_semantic_mapper_viewers_library
   CATKIN_DEPENDS srrg_core 
                  srrg_core_viewers 
                  srrg_gl_helpers

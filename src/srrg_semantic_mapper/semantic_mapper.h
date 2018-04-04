@@ -20,6 +20,8 @@ class SemanticMapper{
 public:
     SemanticMapper();
 
+    ~SemanticMapper();
+
     inline void setK(const Eigen::Matrix3f& K_){_K = K_; _invK = _K.inverse();}
 
     void setImages(const srrg_core::RGBImage& rgb_image_,
@@ -31,6 +33,10 @@ public:
 
     const ObjectDetector &detector() const {return _detector;}
     ObjectDetector &detector() {return _detector;}
+
+    inline SemanticMap *globalMap() {return _global_map;}
+    inline const Eigen::Isometry3f &globalT() const {return _globalT;}
+
 
 protected:
     float _raw_depth_scale;
@@ -51,8 +57,8 @@ protected:
     bool _local_set;
     bool _global_set;
 
-    SemanticMap _local_map;
-    SemanticMap _global_map;
+    SemanticMap *_local_map;
+    SemanticMap *_global_map;
     Eigen::Isometry3f _globalT;
 
     std::vector<Association> _associations;

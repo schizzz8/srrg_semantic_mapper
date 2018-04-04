@@ -16,8 +16,8 @@ int main(int argc, char** argv){
   //K
   Eigen::Matrix3f K;
   K << 554.25,    0.0, 320.5,
-      0.0, 554.25, 240.5,
-      0.0,    0.0,   1.0;
+          0.0, 554.25, 240.5,
+          0.0,    0.0,   1.0;
 
   SemanticMapper mapper;
   mapper.setK(K);

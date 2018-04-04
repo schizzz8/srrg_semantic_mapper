@@ -25,8 +25,6 @@ namespace YAML {
 
 namespace srrg_semantic_mapper {
 
-  SemanticMap::SemanticMap(){}
-
   void SemanticMap::serialize(const std::string &filename){
     YAML::Node node;
 
@@ -53,6 +51,16 @@ namespace srrg_semantic_mapper {
       Object obj = node[buffer].as<Object>();
       ObjectPtr obj_ptr = ObjectPtr(new Object(obj));
       _objects[i] = obj_ptr;
+    }
+  }
+
+  void SemanticMap::draw() const {
+    int i=0;
+    for(ObjectPtr o : _objects) {
+      if(!o)
+        std::cerr << "[SRRG_SEMANTIC_MAP][DRAW]: null pointer" << i << std::endl;
+      o->draw();
+      i++;
     }
   }
 

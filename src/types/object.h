@@ -5,6 +5,7 @@
 
 #include <Eigen/Geometry>
 
+
 namespace srrg_semantic_mapper {
 
   class Object;
@@ -25,6 +26,8 @@ namespace srrg_semantic_mapper {
     bool operator == (const Object &o);
 
     void merge(const ObjectPtr &o);
+
+    void draw() const;
 
     inline const int id() const {return _id;}
     inline int& id() {return _id;}

@@ -13,6 +13,14 @@ namespace srrg_semantic_mapper{
 
     _local_set = false;
     _global_set = false;
+
+    _local_map = new SemanticMap();
+    _global_map = new SemanticMap();
+  }
+
+  SemanticMapper::~SemanticMapper(){
+    delete _local_map;
+    delete _global_map;
   }
 
   void SemanticMapper::setImages(const srrg_core::RGBImage &rgb_image_,
@@ -97,7 +105,7 @@ namespace srrg_semantic_mapper{
       populate_global = true;
       _global_set = true;
     } else {
-      _local_map.clear();
+      _local_map->clear();
       _local_set = true;
     }
 
@@ -131,9 +139,9 @@ namespace srrg_semantic_mapper{
                                                upper));
 
       if(populate_global)
-        _global_map.addObject(obj_ptr);
+        _global_map->addObject(obj_ptr);
       else
-        _local_map.addObject(obj_ptr);
+        _local_map->addObject(obj_ptr);
     }
   }
 
@@ -142,8 +150,8 @@ namespace srrg_semantic_mapper{
     if(!_global_set || !_local_set)
       return;
 
-    const int local_size = _local_map.size();
-    const int global_size = _global_map.size();
+    const int local_size = _local_map->size();
+    const int global_size = _global_map->size();
 
     std::cerr << "[Data Association] ";
     std::cerr << "{Local Map size: " << local_size << "} ";
@@ -152,7 +160,7 @@ namespace srrg_semantic_mapper{
     _associations.clear();
 
     for(int i=0; i < global_size; ++i){
-      const ObjectPtr &global = _global_map[i];
+      const ObjectPtr &global = (*_global_map)[i];
       const string &global_type = global->type();
 
       std::cerr << "\t>> Global: " << global_type;
@@ -161,7 +169,7 @@ namespace srrg_semantic_mapper{
       float best_error = std::numeric_limits<float>::max();
 
       for(int j=0; j < local_size; ++j){
-        const ObjectPtr &local = _local_map[j];
+        const ObjectPtr &local = (*_local_map)[j];
         const string &local_type = local->type();
 
         if(local_type != global_type)
@@ -197,15 +205,15 @@ namespace srrg_semantic_mapper{
       return;
 
     int added = 0, merged = 0;
-    for(int i=0; i < _local_map.size(); ++i){
-      const ObjectPtr &local = _local_map[i];
+    for(int i=0; i < _local_map->size(); ++i){
+      const ObjectPtr &local = (*_local_map)[i];
       int association_id = associationID(local);
       if(association_id == -1){
-        _global_map.addObject(local);
+        _global_map->addObject(local);
         added++;
         continue;
       } else {
-        ObjectPtr &global_associated = _global_map[association_id];
+        ObjectPtr &global_associated = (*_global_map)[association_id];
 
         if(local->type() != global_associated->type())
           continue;
