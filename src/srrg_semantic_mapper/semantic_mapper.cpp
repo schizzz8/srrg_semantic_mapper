@@ -39,8 +39,10 @@ namespace srrg_semantic_mapper{
   }
 
   Vector3fVector SemanticMapper::unproject(const std::vector<Eigen::Vector2i> &pixels){
-    Vector3fVector points;
-    for(int idx=0; idx < pixels.size(); ++idx){
+    int num_pixels = pixels.size();
+    Vector3fVector points(num_pixels);
+    int k=0;
+    for(int idx=0; idx < num_pixels; ++idx){
       const Eigen::Vector2i& pixel = pixels[idx];
       int r = pixel.x();
       int c = pixel.y();
@@ -56,9 +58,10 @@ namespace srrg_semantic_mapper{
       Eigen::Vector3f camera_point = _invK * Eigen::Vector3f(c*d,r*d,d);
       Eigen::Vector3f map_point = _globalT*camera_point;
       //        std::cerr << map_point.transpose() << " ";
-      points.push_back(map_point);
-
+      points[k]=map_point;
+      k++;
     }
+    points.resize(k);
     return points;
   }
 

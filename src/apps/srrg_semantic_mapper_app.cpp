@@ -28,8 +28,9 @@ int main(int argc, char** argv){
   if(data.is_open()){
     while(std::getline(data,line)){
       std::istringstream iss(line);
+      int seq;
       std::string rgb_filename,depth_filename,rgbd_filename,logical_filename,models_filename;
-      iss>>rgb_filename>>depth_filename>>rgbd_filename>>logical_filename>>models_filename;
+      iss>>seq>>rgb_filename>>depth_filename>>rgbd_filename>>logical_filename>>models_filename;
 
       //read rgbd transform
       Eigen::Isometry3f rgbd_transform = Eigen::Isometry3f::Identity();
@@ -51,10 +52,9 @@ int main(int argc, char** argv){
       mapper.detector().setModels(models);
       mapper.setImages(rgb_image,raw_depth_image);
 
-      //  cv::Mat label_image = mapper.detector().labelImage().clone();
-
-      //  cv::imshow("label_image",label_image);
-      //  cv::waitKey();
+//      cv::Mat label_image = mapper.detector().labelImage().clone();
+//      cv::imshow("label_image",label_image);
+//      cv::waitKey();
 
 
     }
