@@ -50,6 +50,9 @@ protected:
     int _rows;
     int _cols;
     srrg_core::Float3Image _points_image;
+    //point cloud normals
+    srrg_core::Float3Image _normals_image;
+
 
     ObjectDetector _detector;
     DetectionVector _detections;
@@ -67,6 +70,10 @@ private:
     srrg_core::Vector3fVector unproject(const std::vector<Eigen::Vector2i> &pixels);
     void getLowerUpper3d(const srrg_core::Vector3fVector &points, Eigen::Vector3f &lower, Eigen::Vector3f &upper);
     int associationID(const ObjectPtr &local);
+
+    //this function builds an object from the detector output
+    ObjectPtr objectFromDetection(const Detection &detection);
+
 };
 
 }

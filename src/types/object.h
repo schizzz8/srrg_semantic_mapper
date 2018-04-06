@@ -3,6 +3,8 @@
 #include <vector>
 #include <memory>
 
+#include <srrg_types/cloud_3d.h>
+
 #include <Eigen/Geometry>
 
 
@@ -17,10 +19,11 @@ namespace srrg_semantic_mapper {
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     Object(int id_=-1,
-           std::string type_="",
-           Eigen::Isometry3f pose_=Eigen::Isometry3f::Identity(),
-           Eigen::Vector3f lower_=Eigen::Vector3f::Zero(),
-           Eigen::Vector3f upper_=Eigen::Vector3f::Zero());
+           const std::string &type_="",
+           const Eigen::Isometry3f &pose_=Eigen::Isometry3f::Identity(),
+           const Eigen::Vector3f &lower_=Eigen::Vector3f::Zero(),
+           const Eigen::Vector3f &upper_=Eigen::Vector3f::Zero(),
+           const srrg_core::Cloud3D &cloud_=srrg_core::Cloud3D());
 
     bool operator < (const Object &o);
     bool operator == (const Object &o);
@@ -46,6 +49,7 @@ namespace srrg_semantic_mapper {
     Eigen::Isometry3f _pose;
     Eigen::Vector3f _lower;
     Eigen::Vector3f _upper;
+    srrg_core::Cloud3D _cloud;
   };
 
 }

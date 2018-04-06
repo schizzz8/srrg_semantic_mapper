@@ -7,17 +7,17 @@ namespace srrg_semantic_mapper{
   using namespace srrg_gl_helpers;
 
   Object::Object(int id_,
-                 std::string type_,
-                 Eigen::Isometry3f pose_,
-                 Eigen::Vector3f lower_,
-                 Eigen::Vector3f upper_):
+                 const string & type_,
+                 const Eigen::Isometry3f & pose_,
+                 const Eigen::Vector3f & lower_,
+                 const Eigen::Vector3f & upper_,
+                 const srrg_core::Cloud3D & cloud_):
     _id(id_),
     _type(type_),
     _pose(pose_),
     _lower(lower_),
-    _upper(upper_){
-
-  }
+    _upper(upper_),
+    _cloud(cloud_) {}
 
   bool Object::operator <(const Object &o){
     return (this->_id < o.id());
@@ -46,6 +46,8 @@ namespace srrg_semantic_mapper{
   }
 
   void Object::draw() const {
+
+    _cloud.draw();
 
     const Eigen::Vector3f centroid = (_lower + _upper)/2.0f;
     const Eigen::Vector3f size = (_upper - _lower);

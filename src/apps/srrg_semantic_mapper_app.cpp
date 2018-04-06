@@ -28,7 +28,6 @@ int main(int argc, char** argv){
   viewer.setMapper(&mapper);
   viewer.show();
 
-
   std::string line;
   std::ifstream data(argv[1]);
 

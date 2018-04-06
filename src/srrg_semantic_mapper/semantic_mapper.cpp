@@ -45,61 +45,80 @@ namespace srrg_semantic_mapper{
                        8.0f);
 
     _detector.compute(_detections,_points_image);
+
+    //compute point cloud normals
+    computeSimpleNormals(_normals_image,
+                         _points_image,
+                         3,
+                         3,
+                         8.0f);
+
   }
 
-  Vector3fVector SemanticMapper::unproject(const std::vector<Eigen::Vector2i> &pixels){
+  ObjectPtr SemanticMapper::objectFromDetection(const Detection &detection){
+
+    std::string object_type = detection.type().substr(0,detection.type().find_first_of("_"));
+    std::cerr << std::endl << object_type << ": ";
+
+    std::cerr << "[(" << detection.topLeft().transpose() << ") -";
+    std::cerr << " (" << detection.bottomRight().transpose() << ")]" << std::endl;
+
+    const std::vector<Eigen::Vector2i> &pixels = detection.pixels();
     int num_pixels = pixels.size();
-    std::cerr << "num pixels: " << num_pixels << std::endl;
-    Vector3fVector points(num_pixels);
-
+    Cloud3D cloud;
+    cloud.resize(num_pixels);
     int k=0;
-    for(int idx=0; idx < num_pixels; ++idx){
-      const Eigen::Vector2i& pixel = pixels[idx];
-      int r = pixel.x();
-      int c = pixel.y();
-      const unsigned short& depth = _depth_image.at<const unsigned short>(r,c);
-      float d = depth * _raw_depth_scale;
 
-      if(d <= _min_distance)
+    Eigen::Vector3f min(std::numeric_limits<float>::max(),std::numeric_limits<float>::max(),std::numeric_limits<float>::max());
+    Eigen::Vector3f max(-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max());
+
+    std::cerr << "a";
+
+    for(int i=0; i<num_pixels; ++i){
+      const cv::Vec3f& cv_point = _points_image.at<const cv::Vec3f>(pixels[i].x(), pixels[i].y());
+      const cv::Vec3f& cv_normal = _normals_image.at<const cv::Vec3f>(pixels[i].x(), pixels[i].y());
+
+      if(cv::norm(cv_point) < 1e-3 || cv::norm(cv_normal) < 1e-3)
         continue;
 
-      if(d >= _max_distance)
-        continue;
-
-      Eigen::Vector3f camera_point = _invK * Eigen::Vector3f(c*d,r*d,d);
-      Eigen::Vector3f map_point = _globalT*camera_point;
-
-      points[k]=map_point;
+      Eigen::Vector3f point(cv_point[0], cv_point[1],cv_point[2]);
+      Eigen::Vector3f normal(cv_normal[0], cv_normal[1],cv_normal[2]);
+      cloud[k] = RichPoint3D(point,normal,1.0f);
       k++;
+
+      if(point.x() < min.x())
+        min.x() = point.x();
+      if(point.x() > max.x())
+        max.x() = point.x();
+      if(point.y() < min.y())
+        min.y() = point.y();
+      if(point.y() > max.y())
+        max.y() = point.y();
+      if(point.z() < min.z())
+        min.z() = point.z();
+      if(point.z() > max.z())
+        max.z() = point.z();
     }
-    points.resize(k);
-    return points;
+
+    std::cerr << "b";
+
+    //check if object is empty
+    if(!k){
+      std::cerr << "empty object" << std::endl;
+      return nullptr;
+    }
+
+    cloud.resize(k);
+
+    std::cerr << "BB: [(" << min.transpose() << "," << max.transpose() << ")]" << std::endl;
+
+    Eigen::Isometry3f pose = Eigen::Isometry3f::Identity();
+    pose.translation() = (max+min)/2.0f;
+
+    return ObjectPtr(new Object(0,object_type,pose,min,max,cloud));
+
   }
 
-  void SemanticMapper::getLowerUpper3d(const Vector3fVector &points, Eigen::Vector3f &lower, Eigen::Vector3f &upper){
-    lower.x() = std::numeric_limits<float>::max();
-    lower.y() = std::numeric_limits<float>::max();
-    lower.z() = std::numeric_limits<float>::max();
-    upper.x() = -std::numeric_limits<float>::max();
-    upper.y() = -std::numeric_limits<float>::max();
-    upper.z() = -std::numeric_limits<float>::max();
-
-    for(int i=0; i < points.size(); ++i){
-
-      if(points[i].x() < lower.x())
-        lower.x() = points[i].x();
-      if(points[i].x() > upper.x())
-        upper.x() = points[i].x();
-      if(points[i].y() < lower.y())
-        lower.y() = points[i].y();
-      if(points[i].y() > upper.y())
-        upper.y() = points[i].y();
-      if(points[i].z() < lower.z())
-        lower.z() = points[i].z();
-      if(points[i].z() > upper.z())
-        upper.z() = points[i].z();
-    }
-  }
 
   void SemanticMapper::extractObjects(){
 
@@ -114,30 +133,16 @@ namespace srrg_semantic_mapper{
 
     for(int i=0; i < _detections.size(); ++i){
 
-      const DetectionPtr& detection = _detections[i];
+      const Detection& detection = *_detections[i];
 
-      if((detection->bottomRight()-detection->topLeft()).norm() < 1e-3 ||
-         (detection->bottomRight()-detection->topLeft()).norm() >= 2e+4)
+      if((detection.bottomRight()-detection.topLeft()).norm() < 1e-3 ||
+         (detection.bottomRight()-detection.topLeft()).norm() >= 2e+4)
         continue;
 
-      std::cerr << std::endl << detection->type() << ": [(";
-      std::cerr << detection->topLeft().transpose() << ") - (" << detection->bottomRight().transpose() << ")]" << std::endl;
+      ObjectPtr obj_ptr = objectFromDetection(detection);
 
-      std::string object_type = detection->type().substr(0,detection->type().find_first_of("_"));
-
-      Vector3fVector points = unproject(detection->pixels());
-      Eigen::Vector3f lower,upper;
-      getLowerUpper3d(points,lower,upper);
-      std::cerr << "BB: [(" << lower.transpose() << "," << upper.transpose() << ")]" << std::endl;
-
-      Eigen::Isometry3f pose = Eigen::Isometry3f::Identity();
-      pose.translation() = (upper+lower)/2.0f;
-
-      ObjectPtr obj_ptr = ObjectPtr(new Object(i,
-                                               object_type,
-                                               pose,
-                                               lower,
-                                               upper));
+      if(!obj_ptr)
+        continue;
 
       if(populate_global)
         _global_map->addObject(obj_ptr);
