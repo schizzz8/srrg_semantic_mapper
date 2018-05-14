@@ -1,5 +1,6 @@
 add_subdirectory(types)
 add_subdirectory(srrg_object_detector)
 add_subdirectory(srrg_semantic_mapper)
-add_subdirectory(apps)
 add_subdirectory(srrg_semantic_mapper_viewers)
+add_subdirectory(apps)
+

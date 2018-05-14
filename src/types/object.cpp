@@ -49,14 +49,15 @@ namespace srrg_semantic_mapper{
 
     _cloud.draw();
 
-    const Eigen::Vector3f centroid = (_lower + _upper)/2.0f;
     const Eigen::Vector3f size = (_upper - _lower);
 
+    const Eigen::Vector3f centroid = (_lower + _upper)/2.0f;
     Eigen::Isometry3f transform = Eigen::Isometry3f::Identity();
     transform.translation() = centroid;
 
     glPushMatrix();
     glMultMatrix(transform);
+//    glMultMatrix(_pose);
     glColor4f(1.0,0.0,0.0,1.0);
     drawBoxWireframe(size.x(),size.y(),size.z());
     glPopMatrix();

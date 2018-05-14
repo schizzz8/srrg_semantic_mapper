@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include <types/semantic_map.h>
-#include <types/detection.h>
+//#include <types/detection.h>
 
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
@@ -27,7 +27,7 @@ public:
     void setImages(const srrg_core::RGBImage& rgb_image_,
                    const srrg_core::RawDepthImage& raw_depth_image_);
 
-    void extractObjects();
+//    void extractObjects();
     void findAssociations();
     void mergeMaps();
 
@@ -55,7 +55,7 @@ protected:
 
 
     ObjectDetector _detector;
-    DetectionVector _detections;
+//    DetectionVector _detections;
 
     bool _local_set;
     bool _global_set;
@@ -72,7 +72,7 @@ private:
     int associationID(const ObjectPtr &local);
 
     //this function builds an object from the detector output
-    ObjectPtr objectFromDetection(const Detection &detection);
+//    ObjectPtr objectFromDetection(const Detection &detection);
 
 };
 

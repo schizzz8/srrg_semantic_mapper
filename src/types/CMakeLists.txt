@@ -1,6 +1,6 @@
 add_library(srrg_types_library SHARED
-  detection.cpp detection.h
   object.cpp object.h
+  element.cpp element.h
   semantic_map.cpp semantic_map.h
 )
 

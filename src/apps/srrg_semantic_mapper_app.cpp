@@ -65,6 +65,7 @@ int main(int argc, char** argv){
 //      cv::waitKey();
 
       mapper.extractObjects();
+
       mapper.findAssociations();
       mapper.mergeMaps();
 
