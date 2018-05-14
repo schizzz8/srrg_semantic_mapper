@@ -10,7 +10,7 @@
 using namespace srrg_semantic_mapper;
 
 void deserializeTransform(const char* filename, Eigen::Isometry3f &transform);
-void deserializeModels(const char* filename, ObjectDetector::ModelVector &models);
+void deserializeModels(const char* filename, ElementPtrVector &models);
 
 int main(int argc, char** argv){
 
@@ -49,7 +49,7 @@ int main(int argc, char** argv){
       deserializeTransform(logical_filename.c_str(),logical_transform);
 
       //read models
-      ObjectDetector::ModelVector models;
+      ElementPtrVector models;
       deserializeModels(models_filename.c_str(),models);
 
       //read images
@@ -57,17 +57,17 @@ int main(int argc, char** argv){
       cv::Mat raw_depth_image = cv::imread(depth_filename,cv::IMREAD_UNCHANGED);
 
       mapper.detector().setTransform(rgbd_transform.inverse()*logical_transform);
-      mapper.detector().setModels(models);
+      mapper.detector().setElements(models);
       mapper.setImages(rgb_image,raw_depth_image);
 
 //      cv::Mat label_image = mapper.detector().labelImage().clone();
 //      cv::imshow("label_image",label_image);
 //      cv::waitKey();
 
-      mapper.extractObjects();
+//      mapper.extractObjects();
 
-      mapper.findAssociations();
-      mapper.mergeMaps();
+//      mapper.findAssociations();
+//      mapper.mergeMaps();
 
       viewer.updateGL();
       app.processEvents();
@@ -104,7 +104,7 @@ void deserializeTransform(const char * filename, Eigen::Isometry3f &transform){
   fin.close();
 }
 
-void deserializeModels(const char * filename, ObjectDetector::ModelVector &models){
+void deserializeModels(const char * filename, ElementPtrVector & models){
   std::ifstream fin(filename);
   std::string line;
 
@@ -129,7 +129,7 @@ void deserializeModels(const char * filename, ObjectDetector::ModelVector &model
       Eigen::Vector3f min(minx,miny,minz);
       Eigen::Vector3f max(maxx,maxy,maxz);
 
-      models.push_back(ObjectDetector::Model (type,model_pose,min,max));
+      models.push_back(new Element(type,model_pose,min,max));
     }
   }
 
