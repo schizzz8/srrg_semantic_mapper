@@ -19,11 +19,13 @@ namespace srrg_semantic_mapper{
 
       void setCameraMinMax(const Eigen::Isometry3f &transform);
 
-      bool inRange(const Eigen::Vector3f &point);
+      bool inRange(const Eigen::Vector3f &point) const;
 
       void addPoint(const Eigen::Vector3f &point);
 
       void computeModelBoundingBox();
+
+      void print() const;
 
       inline const std::string &type() const {return _type;}
       inline const Eigen::Isometry3f &pose() const {return _pose;}

@@ -73,6 +73,8 @@ namespace srrg_semantic_mapper{
       if(element->cloud().empty())
         continue;
 
+      element->print();
+
       ObjectPtr obj_ptr (new Object(k++,
                                     element->type(),
                                     element->pose(),

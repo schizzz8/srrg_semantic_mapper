@@ -52,7 +52,7 @@ namespace srrg_semantic_mapper {
     }
   }
 
-  bool Element::inRange(const Eigen::Vector3f &point){
+  bool Element::inRange(const Eigen::Vector3f &point) const{
     return (point.x() >= _camera_min.x()-0.01 && point.x() <= _camera_max.x()+0.01 &&
             point.y() >= _camera_min.y()-0.01 && point.y() <= _camera_max.y()+0.01 &&
             point.z() >= _camera_min.z()-0.01 && point.z() <= _camera_max.z()+0.01);
@@ -79,6 +79,15 @@ namespace srrg_semantic_mapper {
       if(point.z()>_model_max.z())
         _model_max.z() = point.z();
     }
+  }
+
+  void Element::print() const {
+    std::cerr << ">>Type: " << _type << std::endl;
+    std::cerr << ">>GT min: " << _min.transpose() << std::endl;
+    std::cerr << ">>GT max: " << _max.transpose() << std::endl;
+    std::cerr << ">>MY min: " << _model_min.transpose() << std::endl;
+    std::cerr << ">>MY max: " << _model_max.transpose() << std::endl;
+    std::cerr << std::endl;
   }
 
 }

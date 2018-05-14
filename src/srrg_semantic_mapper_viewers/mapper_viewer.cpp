@@ -23,7 +23,10 @@ namespace srrg_semantic_mapper{
   }
 
   void MapperViewer::draw() {
+
     _global_map = _mapper->globalMap();
+    if(!_global_map->objects().size())
+      return;
 
     //draw Map
     glPushMatrix();
